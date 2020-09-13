@@ -123,3 +123,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#Specific files
+AppCert.crt
+client-2048.csr
+client-2048.key
+details.py
+testRequest.py
+testScripts.py
+opensslComands.txt
+Logs/TennisOddsTimeseries

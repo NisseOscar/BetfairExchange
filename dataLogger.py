@@ -5,6 +5,8 @@ from Exceptions import LoginException, RequestException
 from datetime import datetime, timedelta
 import json
 import sched, time
+import my_app_key my_password my_username from details
+
 
 class DataLogger():
     '''
@@ -107,17 +109,3 @@ class DataLogger():
                 marketData[(marketId,run['selectionId'])] = lastPriceTrded
         marketData = pd.Series(marketData)
         return runners, markets, marketData
-
-
-
-if __name__=='__main__':
-    my_username = sys.argv[1]
-    my_password = sys.argv[2]
-    app_key = "BF1R7et3n1XVYycB"
-    try:
-        lgr = DataLogger(my_username,my_password,app_key)
-        lgr.startLogging(folder = './Logs/TennisOddsTimeseries')
-    except LoginException as e:
-        print(e.message)
-    except RequestException as e:
-        print(e.message)
