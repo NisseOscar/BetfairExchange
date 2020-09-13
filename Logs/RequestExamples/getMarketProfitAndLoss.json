@@ -1,0 +1,23 @@
+[
+  {
+    "marketId": "1.172285912",
+    "profitAndLosses": [
+      {
+        "selectionId": 9193006,
+        "ifWin": 0
+      },
+      {
+        "selectionId": 4290403,
+        "ifWin": 0
+      },
+      {
+        "selectionId": 4105819,
+        "ifWin": 0
+      },
+      {
+        "selectionId": 2249229,
+        "ifWin": 0
+      }
+    ]
+  }
+]

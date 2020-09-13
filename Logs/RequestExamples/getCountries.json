@@ -1,0 +1,22 @@
+[
+  {
+    "countryCode": "GB",
+    "marketCount": 38
+  },
+  {
+    "countryCode": "CZ",
+    "marketCount": 187
+  },
+  {
+    "countryCode": "IT",
+    "marketCount": 188
+  },
+  {
+    "countryCode": "US",
+    "marketCount": 163
+  },
+  {
+    "countryCode": "AU",
+    "marketCount": 2
+  }
+]
