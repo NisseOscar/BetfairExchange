@@ -133,3 +133,7 @@ testRequest.py
 testScripts.py
 opensslComands.txt
 Logs/TennisOddsTimeseries
+
+# Extra
+/Backtests
+/Logs
