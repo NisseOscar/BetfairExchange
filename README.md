@@ -3,6 +3,12 @@ A python api-wrapper for the Swedish betfair exchange api.
 
 Full documentation and support can be found at https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni 
 
+Currently the Api is avalible for Swedish, Italian, Spain and Romania end point. If wanting to switch to any other of these endpoints modify line 22
+```
+ 22       resp = requests.post('https://identitysso-cert.betfair.se/api/certlogin'
+```
+To the country code from .se to .it, .es or .ro.
+
 ## How to set up for the Betfair exchange api
 So in order to use the api you must enable non-Interactive (bot) login for your account and create a Self Signed Certificate.
 You can enable this setting at My Details page on your betfair account.
