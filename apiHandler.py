@@ -7,20 +7,42 @@ import requests
 import pandas as pd
 import sys
 from Exceptions import *
-import my_app_key my_password my_username from details
 
 class BetFairApiHndler:
 
     def __init__(self, username,password, app_key, SafeMode=True):
-        payload = 'username=' + username + '&password=' + password
-        headers = {'X-Application': app_key, 'Content-Type': 'application/x-www-form-urlencoded'}
-        resp = requests.post('https://identitysso-cert.betfair.se/api/certlogin',data=payload,cert=('AppCert.crt','client-2048.key'),headers=headers)
+        self.payload = 'username=' + username + '&password=' + password
+        self.initheaders = {'X-Application': app_key, 'Content-Type': 'application/x-www-form-urlencoded'}
+        self.bet_url = 'https://api.betfair.com/exchange/betting/json-rpc/v1'
+        self.headers = headers = {'X-Application': app_key, 'content-type':'application/json'}
+        self.login()
+
+    def login(self):
+        self.bet_url = 'https://api.betfair.com/exchange/betting/json-rpc/v1'
+        resp = requests.post('https://identitysso-cert.betfair.se/api/certlogin',
+                                data=self.payload,
+                                cert=('AppCert.crt','client-2048.key'),
+                                headers=self.initheaders)
         json_resp=resp.json()
         if json_resp['loginStatus'] != 'SUCCESS':
             raise LoginException("Login failed, status:"+str(json_resp['loginStatus']))
         SSOID = json_resp['sessionToken']
-        self.bet_url = 'https://api.betfair.com/exchange/betting/json-rpc/v1'
-        self.headers = headers = {'X-Application': app_key, 'X-Authentication':SSOID, 'content-type':'application/json'}
+        self.headers['X-Authentication'] = SSOID
+        self.logedin = True
+
+    def logout(self):
+        headers = { 'X-Application': self.headers['X-Application'],
+                    'X-Authentication': self.headers['X-Authentication'],
+                    'Accept': 'application/json'}
+        resp = requests.post("https://identitysso.betfair.com/api/logout",headers= headers)
+        if(resp.status_code!=200):
+            raise LoginException("Failed to logout:"+str(json_resp['loginStatus']))
+        self.logedin = False
+
+    def keepAlive(self):
+        resp = requests.post("https://identitysso.betfair.com/api/keepAlive",headers= self.headers)
+        if(resp.status_code!=200):
+            raise LoginException("Failed to keep token alive:"+str(json_resp['loginStatus']))
 
     def _request(self,reference,params):
         paramstmp = json.dumps(params)
@@ -86,7 +108,7 @@ class BetFairApiHndler:
         # comps =  [{**comp['competition'], 'marketCount':comp['marketCount']} for comp in comps['result']]
         return comps['result']
 
-    def getMarketCatalogue(self,filter={},maxResults =100,**kwargs):
+    def getMarketCatalogue(self,filter={},maxResults ="100",**kwargs):
         '''
             Get a Catalogue of current Markets avalible.
             docs:
@@ -104,14 +126,22 @@ class BetFairApiHndler:
     def getMarketBooks(self, marketIds,**kwargs):
         '''
             Get MarketBook for an lost of specifed market.
+            Observe that it is limited to 100 requests
+
+            Separate requests should be made for OPEN & CLOSED markets.
+            Request that include both OPEN & CLOSED markets will only return those markets that are OPEN.
             docs:
                 https://docs.developer.betfair.com/display/1smk3cen4v3lu3yomq5qye0ni/listMarketBook
         '''
-        params = {**{"marketIds":marketIds}, **kwargs}
-        req_data = self._request(reference = 'listMarketBook',params=params)
-        marketBooks = req_data['result']
-        # for marketBook in marketBooks:
-        #     marketBook.pop("runners")
+        nmbrIds = len(marketIds)
+        lim = 100
+        batches = [marketIds[i*lim:min((i+1)*lim,nmbrIds)] for i in range(0,nmbrIds//lim+1)]
+        marketBooks = []
+        for batch in batches:
+            params = {**{"marketIds":batch}, **kwargs}
+            req_data = self._request(reference = 'listMarketBook',params=params)
+            marketBooks = marketBooks+req_data['result']
+
         return marketBooks
 
     def getMarketBookRunners(self, marketId, **kwargs):

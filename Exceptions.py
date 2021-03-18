@@ -5,7 +5,7 @@ class LoginException(Exception):
         super()
         if message != None:
             self.message = message
-            
+
 class RequestException(Exception):
     """
         An Excpetion class to handle Request exceptions from the Betfair api.
@@ -20,6 +20,8 @@ class RequestException(Exception):
             error = 'Problem parsing the parameters, or a mandatory parameter was not found'
         elif(errCode == '-32603'):
             error = 'Internal JSON-RPC error'
+        elif(errCode == '-32099'):
+            error = 'The application key passed is invalid'
         elif(errCode == 'TOO_MUCH_DATA'):
             error = 'The operation requested too much data, exceeding the Market Data Request Limits.'
         elif(errCode == 'INVALID_INPUT_DATA'):
@@ -47,4 +49,5 @@ class RequestException(Exception):
         else:
             error = 'error is unexplained by documentation'
 
+        self.errCode = error
         self.message = 'A request error occured, '+errCode+": " + error

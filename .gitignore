@@ -136,4 +136,10 @@ Logs/TennisOddsTimeseries
 
 # Extra
 /backtest
-/log
+/logs
+/Rcode
+__init__.py
+dataLogger.py
+
+.gitignore
+.gitattributes
