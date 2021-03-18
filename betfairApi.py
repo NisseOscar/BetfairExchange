@@ -8,7 +8,7 @@ import pandas as pd
 import sys
 from Exceptions import *
 
-class BetFairApiHndler:
+class BetFairApi:
 
     def __init__(self, username,password, app_key, SafeMode=True):
         self.payload = 'username=' + username + '&password=' + password
